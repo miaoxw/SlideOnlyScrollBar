@@ -1,0 +1,109 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .scroll {
+      margin: 100px;
+      width: 500px;
+      height: 5px;
+      background: #ccc;
+      position: relative;
+    }
+
+    .bar {
+      width: 10px;
+      height: 20px;
+      background: #369;
+      position: absolute;
+      top: -7px;
+      left: 0;
+      cursor: pointer;
+    }
+
+    .mask {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: #369;
+      width: 0;
+      height: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="scroll" id="scroll">
+    <div class="bar" id="bar"></div>
+    <div class="mask" id="mask"></div>
+  </div>
+  <p id="result">进度：0%</p>
+</body>
+
+<script>
+  var scroll = document.getElementById('scroll');
+  var bar = document.getElementById('bar');
+  var mask = document.getElementById('mask');
+  var ptxt = document.getElementById('result');
+  var barleft = 0;
+  bar.onmousedown = function (event) {
+    var event = event || window.event;
+    var leftVal = event.clientX - this.offsetLeft;
+    var that = this;
+
+    //拖动事件在down事件中再注册
+    document.onmousemove = function (event) {
+      var event = event || window.event;
+      barleft = event.clientX - leftVal;
+      if (barleft < 0)
+        barleft = 0;
+      else if (barleft > scroll.offsetWidth - bar.offsetWidth)
+        barleft = scroll.offsetWidth - bar.offsetWidth;
+      mask.style.width = barleft + 'px';
+      that.style.left = barleft + "px";
+      ptxt.innerHTML = "进度：" + parseInt(barleft / (scroll.offsetWidth - bar.offsetWidth) * 100) + "%";
+
+      //防止拖动造成内容被选择
+      window.getSelection() ? window.getSelection().removeAllRanges() : document.selection.empty();
+    }
+  }
+
+  document.onmouseup = function () {
+    //解除注册
+    document.onmousemove = null;
+  }
+
+  bar.ontouchstart = function () {
+    var event = event || window.event;
+    if (event.touches.length == 1)//忽略多指触控的情形
+    {
+            var leftVal = event.touches[0].pageX - this.offsetLeft;
+      var that = this;
+
+      document.ontouchmove = function (event) {
+        //event.preventDefault();
+        var event = event || window.event;
+        barleft = event.touches[0].pageX - leftVal;
+        if (barleft < 0)
+          barleft = 0;
+        else if (barleft > scroll.offsetWidth - bar.offsetWidth)
+          barleft = scroll.offsetWidth - bar.offsetWidth;
+        mask.style.width = barleft + 'px';
+        that.style.left = barleft + "px";
+        ptxt.innerHTML = "进度：" + parseInt(barleft / (scroll.offsetWidth - bar.offsetWidth) * 100) + "%";
+      }
+    }
+  }
+
+  document.ontouchend = function () {
+    document.ontouchmove = null;
+  }
+</script>
+
+</html>
