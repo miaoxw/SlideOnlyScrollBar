@@ -83,7 +83,7 @@
     var event = event || window.event;
     if (event.touches.length == 1)//忽略多指触控的情形
     {
-            var leftVal = event.touches[0].pageX - this.offsetLeft;
+      var leftVal = event.touches[0].pageX - this.offsetLeft;
       var that = this;
 
       document.ontouchmove = function (event) {
